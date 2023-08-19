@@ -1,5 +1,6 @@
 # 🤔 What is this?
-This Unity project is a simple tool to use [Azure OpenAI Service API](https://azure.microsoft.com/en-us/products/ai-services/openai-service) and [OpenAI API](https://openai.com) to generate text (GPT) and images (DALLE).
+This Unity project is a simple tool to use [Azure OpenAI Service API](https://azure.microsoft.com/en-us/products/ai-services/openai-service) and [OpenAI API](https://openai.com) to generate text (GPT) and images (DALLE).  
+![UI](UI.GIF)  
 
 # 💨 What you need to get started
 - OpenAI API key  
