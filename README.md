@@ -8,7 +8,7 @@ This Unity project is a simple tool to use [Azure OpenAI Service API](https://az
 - Azure OpenAI Service API endpoint url (GPT, DALLE)  
 - Unity 2021.3.15 or later  
 - Huge Curiosity
-- 
+
 ※ It is possible to use only one of the APIs. For example, to use only the OpenAI API, the Azure API key and endpoint URL fields can be left blank.  
 
 # 🕵️‍♂️ How to set up
@@ -24,11 +24,11 @@ This Unity project is a simple tool to use [Azure OpenAI Service API](https://az
 5. (optional) modify parameters for GPT and change the font of `Canvas > Response UI > UI GPT > Text` to make your project compatible with your language.  
 
 # 👩‍💻 How to use the UI
-Just, type the text you want to generate in the input field and press the submit button. If you select the `GPT` tab, you can generate text. If you select the `DALLE` tab, you can generate an image.  
+Just type the text you want to generate in the input field and press the submit button. If you select the `GPT` tab, you can generate text. If you select the `DALLE` tab, you can generate an image.  
 You can also change the API service (`Azure OpenAI Service` or `OpenAI`) by pressing the `clown` emoji button.  
 
 # 👀 Caution
-I(developer) **have not tested Azure OpenAI Service API**. So, there may be some bugs. If you find any bugs, please let me know.
+I(developer) **have not yet tested Azure OpenAI Service API**. So, there may be some bugs. If you find any bugs, please let me know.
 
 # 📕 Asset packages
 - [Free emojis pixel art](https://assetstore.unity.com/packages/2d/gui/icons/free-emojis-pixel-art-231243)  
