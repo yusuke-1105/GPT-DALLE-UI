@@ -8,6 +8,7 @@ This Unity project is a simple tool to use [Azure OpenAI Service API](https://az
 - Azure OpenAI Service API endpoint url (GPT, DALLE)  
 - Unity 2021.3.15 or later  
 - Huge Curiosity  
+※ It is possible to use only one of the APIs. For example, to use only the OpenAI API, the Azure API key and endpoint URL fields can be left blank.  
 
 # 🕵️‍♂️ How to set up
 1. Open the project in Unity.  
