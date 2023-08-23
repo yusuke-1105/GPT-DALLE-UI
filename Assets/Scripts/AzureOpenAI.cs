@@ -33,21 +33,21 @@ public class AzureOpenAI : MonoBehaviour
     string urlDALLEOpenAI = "https://api.openai.com/v1/images/generations";
 
     // parameters for GPT
-    [SerializeField] public int MaxTokens = 80;
-    [SerializeField] public int MemorablePairs = 0;
-    List<Dictionary<string, string>> PreviousMessage;
+    [SerializeField] public int maxTokens = 80;
+    [SerializeField] public int memorablePairs = 0;
+    List<Dictionary<string, string>> previousMessage;
 
     // for UI
-    ButtonManipulator ButtonManipulator;    // for getting the source of GPT & DALLE and handling the rotation of Emoji
+    ButtonManipulator buttonManipulator;    // for getting the source of GPT & DALLE and handling the rotation of Emoji
     public TextMeshProUGUI textGPT;         // present the output of GPT
     public Image imageDALLE;                // present the output of DALLE
 
     public void Awake()
     {
         // get the instance of ButtonManipulator.cs
-        ButtonManipulator = GameObject.Find("EventSystem").GetComponent<ButtonManipulator>();
+        buttonManipulator = GameObject.Find("EventSystem").GetComponent<ButtonManipulator>();
 
-        PreviousMessage = new List<Dictionary<string, string>>();
+        previousMessage = new List<Dictionary<string, string>>();
         try
         {
             string[] SettingTextForPreprocessing;
@@ -59,7 +59,7 @@ public class AzureOpenAI : MonoBehaviour
             }
             SettingText = string.Join("", SettingTextForPreprocessing);
 
-            PreviousMessage.Add(new Dictionary<string, string>  // add the agent's role to jsonBody
+            previousMessage.Add(new Dictionary<string, string>  // add the agent's role to jsonBody
             {
                 {"role", "system"},
                 {"content", SettingText}
@@ -79,15 +79,15 @@ public class AzureOpenAI : MonoBehaviour
     // connect API and get the response -----------------------------------------------------------------
     public async Task<JObject> ConnectToOpenAPI(string url, string jsonBody)
     {
-        ButtonManipulator.CommandToEmoji();     // start rotating the Emoji (optional)
+        buttonManipulator.CommandToEmoji();     // start rotating the Emoji (optional)
 
         Dictionary<string, string> headers = new Dictionary<string, string>();
-        if(ButtonManipulator.source == "Azure") headers.Add("api-key", $"{ApiKeyAzure}");
+        if(buttonManipulator.source == "Azure") headers.Add("api-key", $"{ApiKeyAzure}");
         else headers.Add("Authorization", $"Bearer {ApiKeyOpenAI}");
 
         JObject response = await HTTPRequest.Link(url, headers, jsonBody);
 
-        ButtonManipulator.CommandToEmoji();     // stop rotating the Emoji (optional)
+        buttonManipulator.CommandToEmoji();     // stop rotating the Emoji (optional)
 
         return response;
     }
@@ -95,7 +95,7 @@ public class AzureOpenAI : MonoBehaviour
     // prepare the input json body for GPT -------------------------------------------------------------
     public async Task GPTCompletion(string text) 
     {
-        PreviousMessage.Add(new Dictionary<string, string>   // add the user's text to jsonBody
+        previousMessage.Add(new Dictionary<string, string>   // add the user's text to jsonBody
         {
             {"role", "user"},
             {"content", text}
@@ -106,20 +106,20 @@ public class AzureOpenAI : MonoBehaviour
         var request = new       // add parameters to jsonBody
         {
             model = versionGPTOpenAI,
-            max_tokens = MaxTokens,
+            max_tokens = maxTokens,
             stop = stop,
-            messages = PreviousMessage
+            messages = previousMessage
         };
 
         jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
 
-        if(ButtonManipulator.source == "Azure") url = urlGPTAzure;
-        else if(ButtonManipulator.source == "OpenAI") url = urlGPTOpenAI;
+        if(buttonManipulator.source == "Azure") url = urlGPTAzure;
+        else if(buttonManipulator.source == "OpenAI") url = urlGPTOpenAI;
 
         var result = await ConnectToOpenAPI(url, jsonBody);                     // get response from GPT
         textGPT.text = result["choices"][0]["message"]["content"].ToString();   // get the text from the response
 
-        if(MemorablePairs != 0)     // if memorize the past(history) messages
+        if(memorablePairs != 0)     // if memorize the past(history) messages
         {
             Dictionary<string, string> ResponseMessage = new Dictionary<string, string>
             {
@@ -127,15 +127,15 @@ public class AzureOpenAI : MonoBehaviour
                 {"content", textGPT.text}
             };
 
-            PreviousMessage.Add(ResponseMessage);
+            previousMessage.Add(ResponseMessage);
 
-            if (PreviousMessage.Count >= 1 + MemorablePairs * 2)     // if the number of previous messages is over the limit
+            if (previousMessage.Count >= 1 + memorablePairs * 2)     // if the number of previous messages is over the limit
             {
-                PreviousMessage.RemoveAt(1);    //remove the oldest message (user text)
-                PreviousMessage.RemoveAt(1);    //remove the oldest message (agent text)
+                previousMessage.RemoveAt(1);    //remove the oldest message (user text)
+                previousMessage.RemoveAt(1);    //remove the oldest message (agent text)
             }
         }else{
-            PreviousMessage.RemoveAt(1);        //remove the message (user text)
+            previousMessage.RemoveAt(1);        //remove the message (user text)
         }
     }
 
@@ -152,8 +152,8 @@ public class AzureOpenAI : MonoBehaviour
 
         jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
 
-        if(ButtonManipulator.source == "Azure") url = urlDALLEAzure;
-        else if(ButtonManipulator.source == "OpenAI") url = urlDALLEOpenAI;
+        if(buttonManipulator.source == "Azure") url = urlDALLEAzure;
+        else if(buttonManipulator.source == "OpenAI") url = urlDALLEOpenAI;
 
         var result = await ConnectToOpenAPI(url, jsonBody);   // get response from DALLE
         urlImage = result["data"][0]["url"].ToString();       // get the url from the response

@@ -1859,8 +1859,8 @@ MonoBehaviour:
   versionDALLEAzure: 2023-06-01-preview
   ApiKeyOpenAI: 
   versionGPTOpenAI: gpt-3.5-turbo
-  MaxTokens: 80
-  MemorablePairs: 2
+  maxTokens: 80
+  memorablePairs: 0
   textGPT: {fileID: 970993168}
   imageDALLE: {fileID: 1629848982}
 --- !u!114 &748089373
