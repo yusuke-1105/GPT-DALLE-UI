@@ -40,6 +40,7 @@ The versions of the APIs used are as follows.
 # 📕 Asset packages and references
 - [Free emojis pixel art](https://assetstore.unity.com/packages/2d/gui/icons/free-emojis-pixel-art-231243)  
 - [2D Atlas Speech bubbles Alphabet Numbers](https://assetstore.unity.com/packages/2d/environments/2d-atlas-speech-bubbles-alphabet-numbers-88398)  
+- [Azure OpenAI Service REST API reference](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference)  
 
 # 📄 License
 This project is licensed under the Apache-2.0 License.
