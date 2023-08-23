@@ -13,19 +13,24 @@ using TMPro;
 public class AzureOpenAI : MonoBehaviour
 {
     string jsonBody;
-    string urlImage;
+    string url = "";
+    string urlImage = "";
 
     // API key for Azure OpenAI Service
     public string ApiKeyAzure;
     // URL for Azure OpenAI Service
-    public string urlGPTAzure;
-    public string urlDALLEAzure;
+    public string instanceNameAzure;
+    public string versionGPTAzure = "2023-05-15";
+    public string versionDALLEAzure = "2023-06-01-preview";
+    string urlGPTAzure;
+    string urlDALLEAzure;
 
     // API key for OpenAI
     public string ApiKeyOpenAI;
     // URL for OpenAI
-    public string urlGPTOpenAI = "https://api.openai.com/v1/chat/completions";
-    public string urlDALLEOpenAI = "https://api.openai.com/v1/images/generations";
+    public string versionGPTOpenAI = "gpt-3.5-turbo";
+    string urlGPTOpenAI = "https://api.openai.com/v1/chat/completions";
+    string urlDALLEOpenAI = "https://api.openai.com/v1/images/generations";
 
     // parameters for GPT
     [SerializeField] public int MaxTokens = 80;
@@ -39,8 +44,10 @@ public class AzureOpenAI : MonoBehaviour
 
     public void Awake()
     {
-        PreviousMessage = new List<Dictionary<string, string>>();
+        // get the instance of ButtonManipulator.cs
+        ButtonManipulator = GameObject.Find("EventSystem").GetComponent<ButtonManipulator>();
 
+        PreviousMessage = new List<Dictionary<string, string>>();
         try
         {
             string[] SettingTextForPreprocessing;
@@ -62,9 +69,11 @@ public class AzureOpenAI : MonoBehaviour
         {
             Debug.Log("Failed to read the setting text...");
         }
-
-        // get the instance of ButtonManipulator.cs
-        ButtonManipulator = GameObject.Find("EventSystem").GetComponent<ButtonManipulator>();
+        
+        // endpoint of Azure OpenAI Service
+        urlGPTAzure = $"https://{instanceNameAzure}.openai.azure.com/openai/deployments/agent/chat/completions?api-version={versionGPTAzure}";
+        // endpoint of Azure OpenAI Service
+        urlDALLEAzure = $"https://{instanceNameAzure}.openai.azure.com/openai/images/generations:submit?api-version={versionDALLEAzure}";
     }
 
     // connect API and get the response -----------------------------------------------------------------
@@ -73,19 +82,12 @@ public class AzureOpenAI : MonoBehaviour
         ButtonManipulator.CommandToEmoji();     // start rotating the Emoji (optional)
 
         Dictionary<string, string> headers = new Dictionary<string, string>();
-        if(ButtonManipulator.source == "Azure") headers.Add("Authorization", $"Bearer {ApiKeyAzure}");
+        if(ButtonManipulator.source == "Azure") headers.Add("api-key", $"{ApiKeyAzure}");
         else headers.Add("Authorization", $"Bearer {ApiKeyOpenAI}");
-        headers.Add("accept", "application/json");
+
         JObject response = await HTTPRequest.Link(url, headers, jsonBody);
 
-        Debug.Log(response);
-
         ButtonManipulator.CommandToEmoji();     // stop rotating the Emoji (optional)
-
-        // {
-        // "statusCode": 401,
-        // "message": "Unauthorized. Access token is missing, invalid, audience is incorrect (https://cognitiveservices.azure.com), or have expired."
-        // }
 
         return response;
     }
@@ -93,44 +95,29 @@ public class AzureOpenAI : MonoBehaviour
     // prepare the input json body for GPT -------------------------------------------------------------
     public async Task GPTCompletion(string text) 
     {
-        PreviousMessage.Add(new Dictionary<string, string>  // add the user's text to jsonBody
+        PreviousMessage.Add(new Dictionary<string, string>   // add the user's text to jsonBody
         {
             {"role", "user"},
             {"content", text}
         });
 
-        var stop = new List<string> {"]","。"};             // for Japanese(optional)
+        var stop = new List<string> {"]","。"};    // for Japanese(optional)
 
-        // for Azure ++++++++++++++++++++++++++
-        if(ButtonManipulator.source == "Azure")
+        var request = new       // add parameters to jsonBody
         {
-            var request = new       // add parameters to jsonBody
-            {
-                max_tokens = MaxTokens,
-                stop = stop,
-                stream = true,
-                prompt = PreviousMessage
-            };
+            model = versionGPTOpenAI,
+            max_tokens = MaxTokens,
+            stop = stop,
+            messages = PreviousMessage
+        };
 
-            jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
-            var result = await ConnectToOpenAPI(urlGPTAzure, jsonBody);   // get response from GPT
-            textGPT.text = result["choices"][0]["text"].ToString();       // get the text from the response
-        }
-        // for OpenAI +++++++++++++++++++++++++++++++
-        else if(ButtonManipulator.source == "OpenAI")
-        {
-            var request = new        // add parameters to jsonBody
-            {
-                model = "gpt-3.5-turbo",
-                max_tokens = MaxTokens,
-                stop = stop,
-                messages = PreviousMessage
-            };
+        jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
 
-            jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
-            var result = await ConnectToOpenAPI(urlGPTOpenAI, jsonBody);            // get response from GPT
-            textGPT.text = result["choices"][0]["message"]["content"].ToString();   // get the text from the response
-        }
+        if(ButtonManipulator.source == "Azure") url = urlGPTAzure;
+        else if(ButtonManipulator.source == "OpenAI") url = urlGPTOpenAI;
+
+        var result = await ConnectToOpenAPI(url, jsonBody);                     // get response from GPT
+        textGPT.text = result["choices"][0]["message"]["content"].ToString();   // get the text from the response
 
         if(MemorablePairs != 0)     // if memorize the past(history) messages
         {
@@ -155,32 +142,21 @@ public class AzureOpenAI : MonoBehaviour
     // prepare the input json body for DALLE -------------------------------------------------------------
     public async Task DALLECompletion(string text) 
     {
-        // for Azure ++++++++++++++++++++++++++
-        if(ButtonManipulator.source == "Azure")
-        {
-            var request = new
-            {
-                n = 1,
-                prompt = text
-            };
 
-            jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
-            var result = await ConnectToOpenAPI(urlDALLEAzure, jsonBody);   // get response from DALLE
-            urlImage = result["result"][0]["data"][0]["url"].ToString();    // get the url from the response
-        }
-        // for OpenAI +++++++++++++++++++++++++++++++
-        else if(ButtonManipulator.source == "OpenAI")
+        var request = new
         {
-            var request = new
-            {
-                n = 1,
-                prompt = text
-            };
+            n = 1,
+            size = "512x512",
+            prompt = text
+        };
 
-            jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
-            var result = await ConnectToOpenAPI(urlDALLEOpenAI, jsonBody);   // get response from DALLE
-            urlImage = result["data"][0]["url"].ToString();                  // get the url from the response
-        }
+        jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(request);
+
+        if(ButtonManipulator.source == "Azure") url = urlDALLEAzure;
+        else if(ButtonManipulator.source == "OpenAI") url = urlDALLEOpenAI;
+
+        var result = await ConnectToOpenAPI(url, jsonBody);   // get response from DALLE
+        urlImage = result["data"][0]["url"].ToString();       // get the url from the response
 
         var image = await HTTPRequest.GetImage(urlImage);   // get the image from the url
         imageDALLE.sprite = Sprite.Create(image, new Rect(0, 0, image.width, image.height), Vector2.zero);  // set the image to the UI

@@ -5,7 +5,7 @@ This Unity project is a simple tool to use [Azure OpenAI Service API](https://az
 # 💨 What you need to get started
 - OpenAI API key  
 - Azure OpenAI Service API key  
-- Azure OpenAI Service API endpoint url (GPT, DALLE)  
+- Azure OpenAI Service API instance name (OpenAI Service)  
 - Unity 2021.3.15 or later  
 - Huge Curiosity
 
@@ -17,18 +17,24 @@ This Unity project is a simple tool to use [Azure OpenAI Service API](https://az
 3. Select the `EventSystem` game object in the hierarchy.  
 4. Enter the API key and endpoint url in the following fields.  
   - Api Key Azure  
-  - Url GPT Azure  
-  - Url DALLE Azure  
+  - Instance Name Azure  
   - Api Key OpenAI  
-  to get the API key and endpoint url, please refer to this [link](https://learn.microsoft.com/ja-jp/azure/ai-services/openai/reference).  
+  In the following capture, `Instance Name Azure` is "docs-test-001" and `Api Key Azure` is "KEY 1" or "KEY 2".  
+  ![image](https://learn.microsoft.com/en-us/azure/ai-services/openai/media/quickstarts/endpoint.png#lightbox)  
 5. (optional) modify parameters for GPT and change the font of `Canvas > Response UI > UI GPT > Text` to make your project compatible with your language.  
 
 # 👩‍💻 How to use the UI
 Just type the text you want to generate in the input field and press the submit button. If you select the `GPT` tab, you can generate text. If you select the `DALLE` tab, you can generate an image.  
 You can also change the API service (`Azure OpenAI Service` or `OpenAI`) by pressing the `clown` emoji button.  
 
-# 👀 Caution
-I(developer) **have not yet tested Azure OpenAI Service API**. So, there may be some bugs. If you find any bugs, please let me know.
+# 👀 Dependencies
+The versions of the APIs used are as follows.  
+
+| API | Version |
+| --- | --- |
+| Azure GPT | 2023-05-15 |
+| Azure DALLE | 2023-06-01-preview |
+| OpenAI GPT | gpt-3.5-turbo |
 
 # 📕 Asset packages
 - [Free emojis pixel art](https://assetstore.unity.com/packages/2d/gui/icons/free-emojis-pixel-art-231243)  

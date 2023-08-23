@@ -1854,13 +1854,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ApiKeyAzure: 
-  urlGPTAzure: 
-  urlDALLEAzure: 
+  instanceNameAzure: 
+  versionGPTAzure: 2023-05-15
+  versionDALLEAzure: 2023-06-01-preview
   ApiKeyOpenAI: 
-  urlGPTOpenAI: https://api.openai.com/v1/chat/completions
-  urlDALLEOpenAI: https://api.openai.com/v1/images/generations
+  versionGPTOpenAI: gpt-3.5-turbo
   MaxTokens: 80
-  MemorablePairs: 0
+  MemorablePairs: 2
   textGPT: {fileID: 970993168}
   imageDALLE: {fileID: 1629848982}
 --- !u!114 &748089373
