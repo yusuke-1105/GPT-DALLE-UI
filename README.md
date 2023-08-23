@@ -5,7 +5,7 @@ This Unity project is a simple tool to use [Azure OpenAI Service API](https://az
 # 💨 What you need to get started
 - OpenAI API key  
 - Azure OpenAI Service API key  
-- Azure OpenAI Service API instance name (OpenAI Service)  
+- Azure OpenAI Service API instance name  
 - Unity 2021.3.15 or later  
 - Huge Curiosity
 
