@@ -20,6 +20,7 @@ public class AzureOpenAI : MonoBehaviour
     public string ApiKeyAzure;
     // URL for Azure OpenAI Service
     public string instanceNameAzure;
+    public string deploymentNameAzure;
     public string versionGPTAzure = "2023-05-15";
     public string versionDALLEAzure = "2023-06-01-preview";
     string urlGPTAzure;
@@ -71,7 +72,7 @@ public class AzureOpenAI : MonoBehaviour
         }
         
         // endpoint of Azure OpenAI Service
-        urlGPTAzure = $"https://{instanceNameAzure}.openai.azure.com/openai/deployments/agent/chat/completions?api-version={versionGPTAzure}";
+        urlGPTAzure = $"https://{instanceNameAzure}.openai.azure.com/openai/deployments/{deploymentNameAzure}/chat/completions?api-version={versionGPTAzure}";
         // endpoint of Azure OpenAI Service
         urlDALLEAzure = $"https://{instanceNameAzure}.openai.azure.com/openai/images/generations:submit?api-version={versionDALLEAzure}";
     }
